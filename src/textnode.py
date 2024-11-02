@@ -25,9 +25,9 @@ class TextNode:
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
     
     @classmethod
-    def __get_text_type(cls, value: str):
-        for type in TextType:
-            if value.lower() == type.value:
+    def __get_text_type(cls, type: str):
+        for text in TextType:
+            if text.value.lower() == type.value:
                 return type
         raise ValueError(f"Error: {value} is not a valid text type")
 
