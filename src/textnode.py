@@ -11,7 +11,7 @@ class TextType(Enum):
 class TextNode:
     def __init__(self, text, text_type, url = None) -> None:
         self.text = text
-        self.text_type = TextNode.__get_text_type(text_type)
+        self.text_type = text_type.value
         self.url = url
     
     def __eq__(self, other: object) -> bool:
@@ -24,13 +24,6 @@ class TextNode:
     def __repr__(self):
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
     
-    @classmethod
-    def __get_text_type(cls, type: str):
-        for text in TextType:
-            if text.value.lower() == type.value:
-                return type
-        raise ValueError(f"Error: {value} is not a valid text type")
-
     @classmethod
     def print_text_types(cls):
         for type in TextType:
