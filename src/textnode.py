@@ -10,7 +10,7 @@ class TextType(Enum):
     
 class TextNode:
     """
-    A class representing Text Node for HTML
+    A class representing Text Node for as an intermidiate representation from markdown to HTML
     
     Attributes:
         text (str): The text content of the HTML node
