@@ -1,7 +1,7 @@
 import unittest
 from enum import Enum
 
-from textnode import TextNode
+from src.textnode import TextNode
 
 
 

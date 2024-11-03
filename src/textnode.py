@@ -13,9 +13,9 @@ class TextNode:
     A class representing Text Node for as an intermidiate representation from markdown to HTML
     
     Attributes:
-        text (str): The text content of the HTML node
-        text_type(TextType): A text type defined in the TextType Enum
-        <url(str)>: A optional URL for an element HTML element that allows you to specify a url.
+        text - The text content of the node
+        text_type - The type of text this node contains, which is a member of the TextType enum. You'll have to get the .value from the enum value you pass in.
+        url - The URL of the link or image, if the text is a link. Default to None if nothing is passed in.
     """
     __Sentinel = object()
     def __init__(self, text, text_type, url=__Sentinel) -> None:
