@@ -9,9 +9,14 @@ class TextType(Enum):
     IMAGE = "image"
     
 class TextNode:
-    '''
-    Text Node class includes methods and classes to work with text nodes for HTML
-    '''
+    """
+    A class representing Text Node for HTML
+    
+    Attributes:
+        text (str): The text content of the HTML node
+        text_type(TextType): A text type defined in the TextType Enum
+        <url(str)>: A optional URL for an element HTML element that allows you to specify a url.
+    """
     __Sentinel = object()
     def __init__(self, text, text_type, url=__Sentinel) -> None:
         self.text = text
