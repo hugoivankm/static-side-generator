@@ -41,6 +41,10 @@ class TestTextNode(unittest.TestCase):
         node2 = TextNode("This is a bold", TextType.BOLD)
         self.assertNotEqual(node, node2)
         
+        node = TextNode("This is a bol", TextType.ITALIC)
+        node2 = TextNode("This is a bold", TextType.BOLD)
+        self.assertNotEqual(node, node2)
+         
         image1 = TextNode("image", TextType.IMAGE, None)
         image2 = TextNode("image", TextType.IMAGE)
         self.assertNotEqual(image1.__repr__(), image2.__repr__())
