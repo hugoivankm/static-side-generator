@@ -25,7 +25,7 @@ class HTMLNode:
         raise NotImplementedError()
     
     def props_to_html(self):
-        return " ".join([f'{k}: "{v}"' for k, v in self.props.items()])
+        return " ".join([f'{k}="{v}"' for k, v in self.props.items()])
 
     def __validate_HTML_node(self):
 

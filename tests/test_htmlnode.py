@@ -17,15 +17,18 @@ class TestHTMLNode(unittest.TestCase):
                 "anchor test",
                 props='{ "href": "https://www.google.com", "target": "_blank",}')
         except Exception as e:
-            self.fail(f"Object creation failed with exception: {e}")
+            self.fail(f"HTML node creation failed with exception: {e}")
         self.assertIsInstance(node, HTMLNode)
     
     def test_can_create_raw_text(self):
         try:
             node = HTMLNode(value="Raw Text test")
         except Exception as e:
-            self.fail(f"Object creation failed with exception: {e}")
+            self.fail(f"HTML node creation failed with exception: {e}")
         self.assertIsInstance(node, HTMLNode)
     
     def test_no_arguments_raises_exception(self):
             self.assertRaises(AttributeError, HTMLNode)
+            
+if __name__ == "__main__":
+    unittest.main()
