@@ -12,6 +12,18 @@ class TestLeafNode(unittest.TestCase):
             self.fail(f"Leaf Node creation failed with exception: {e}")
         self.assertIsInstance(node, LeafNode)
         
+    def test_can_create_leaf_node_b_none_props(self):
+        try:
+            node = LeafNode(
+                'b',
+                "Bold text",
+                None
+            )
+        except Exception as e:
+            self.fail(f"Leaf Node creation failed with exception: {e}")
+        self.assertIsInstance(node, LeafNode)
+        
+        
     def test_can_create_leaf_node_anchor(self):
         try:
             node = LeafNode(
@@ -27,15 +39,13 @@ class TestLeafNode(unittest.TestCase):
         p_node = LeafNode("p", "This is a paragraph of text.")
         self.assertEqual(p_node.to_html(), "<p>This is a paragraph of text.</p>" )
     
-    def test_leaf_node_anchor_to_html(self):
+    def test_anchor_leaf_node_to_html(self):
         a_node = LeafNode("a", "Click me!", props={"href": "https://www.google.com"})
         self.assertEqual(a_node.to_html(), '<a href="https://www.google.com">Click me!</a>')
     
     def test_no_arguments_raises_exception(self):
-        test_node = LeafNode("p", None)
-        self.assertRaises(ValueError, test_node.to_html)
+        self.assertRaises(ValueError, LeafNode, "p", None)
         
         
-
 if __name__ == "__main__":
     unittest.main()
