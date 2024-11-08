@@ -1,17 +1,11 @@
 import unittest
 from enum import Enum
 
-from src.textnode import TextNode
+from src.textnode import TextNode, TextType
+from src.htmlnode import HTMLNode
 
 
-
-class TextType(Enum):
-    TEXT = "text"
-    BOLD = "bold"
-    ITALIC = "italic"
-    CODE = "code"
-    LINK = "link"
-    IMAGE = "image"
+class TextTypeWithError(Enum):
     ERROR = "error"
 
 class TestTextNode(unittest.TestCase):
@@ -48,9 +42,31 @@ class TestTextNode(unittest.TestCase):
         image1 = TextNode("image", TextType.IMAGE, None)
         image2 = TextNode("image", TextType.IMAGE)
         self.assertNotEqual(image1.__repr__(), image2.__repr__())
+        
+    def test_text_node_to_html_node_TEXT(self):
+        test_text_node = TextNode("This is just text", TextType.TEXT)
+        actual = test_text_node.text_node_to_html_node()
+        expected = HTMLNode(tag=None,value="This is just text", children=None, props=None)
+        self.assertEqual(actual, expected)
+        
+        test_bold_node = TextNode("This is bold text", TextType.BOLD)   
+        actual = test_bold_node.text_node_to_html_node()
+        expected = HTMLNode(tag="b",value="This is bold text", children=None, props=None)
+        self.assertEqual(actual, expected)
+        
+        test_link_node = TextNode("This is a link", TextType.LINK, "example.com")   
+        actual = test_link_node.text_node_to_html_node()
+        expected = HTMLNode(tag="a",value="This is a link", children=None, props={"href":"example.com"})
+        self.assertEqual(actual, expected)
+        
+        test_image_node = TextNode("This is an image", TextType.IMAGE, "example.com")   
+        actual = test_image_node.text_node_to_html_node()
+        expected = HTMLNode(tag="img",value="", children=None, props={'alt': 'This is an image', 'src': 'example.com'})
+        self.assertEqual(actual, expected)
+        
     
     def test_non_existent_node_raises_exception(self):    
-        self.assertRaises(ValueError, TextNode, "This is a text", TextType.ERROR)
+        self.assertRaises(ValueError, TextNode, "This is a text", TextTypeWithError.ERROR)
         
     def test_repr(self):
         node = TextNode("This is a text node", TextType.TEXT, "https://www.boot.dev")
