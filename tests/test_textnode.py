@@ -68,10 +68,15 @@ class TestTextNode(unittest.TestCase):
     def test_non_existent_node_raises_exception(self):    
         self.assertRaises(ValueError, TextNode, "This is a text", TextTypeWithError.ERROR)
         
-    def test_repr(self):
-        node = TextNode("This is a text node", TextType.TEXT, "https://www.boot.dev")
+    def test_repr_with_url(self):
+        node = TextNode("This is a text node", TextType.LINK, "https://www.boot.dev")
         self.assertEqual(
-            'TextNode("This is a text node", TextType.TEXT, https://www.boot.dev)', node.__repr__()
+            'TextNode("This is a text node", TextType.LINK, https://www.boot.dev)', node.__repr__()
         )
-        
+    
+    def test_repr_without_url(self):
+        node = TextNode("This is a text node", TextType.TEXT)
+        self.assertEqual(
+            'TextNode("This is a text node", TextType.TEXT)', node.__repr__()
+        )    
         
