@@ -13,7 +13,7 @@ class TextType(Enum):
 
 class TextNode:
     """
-    A class representing Text Node for as an intermidiate representation from markdown to HTML
+    A class representing Text Node as an intermidiate representation from markdown to HTML
 
     Attributes:
         text - The text content of the node
@@ -22,7 +22,7 @@ class TextNode:
     """
     __Sentinel = object()
 
-    def __init__(self, text, text_type, url=__Sentinel) -> None:
+    def __init__(self, text: str, text_type: TextType, url=__Sentinel) -> None:
         self.text = text
         self.text_type = text_type
         self.url = url
@@ -41,8 +41,8 @@ class TextNode:
 
     def __repr__(self):
         if self.url == TextNode.__Sentinel:
-            return f"TextNode({self.text}, {self.text_type.value})"
-        return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
+            return f'TextNode("{self.text}", {self.text_type})'
+        return f'TextNode("{self.text}", {self.text_type}, {self.url})'
 
     def text_node_to_html_node(self):
         text_type = self.text_type
