@@ -38,3 +38,11 @@ class MarkdownParser:
         for text_node in list:
              representation += (text_node.__repr__() + ( ", " if text_node != list[-1] else ",")) 
         return f"[{representation}]"
+
+    @staticmethod
+    def extract_markdown_images(self, text):
+        pass
+    
+    @staticmethod
+    def extract_markdown_links(self, text):
+        pass

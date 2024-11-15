@@ -43,7 +43,6 @@ class TestMarkdownParser(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_exception_raised_for_invalid_markdows(self):
-
         self.assertRaises(
             ValueError,
             MarkdownParser.split_nodes_delimiter, self,
@@ -51,7 +50,19 @@ class TestMarkdownParser(unittest.TestCase):
             '`',
             TextType.CODE
         )
-
+    def test_extract_markdown_images_should_return_valid_tuple_list(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        actual = MarkdownParser.extract_markdown_images(self, text)
+        expected = [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+        
+        self.assertEqual(actual, expected)
+        
+    def test_extract_markdown_links_should_return_valid_tuple_list(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        actual = MarkdownParser.extract_markdown_links(self, text)
+        expected = [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+        
+        self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
     unittest.main()
