@@ -75,27 +75,31 @@ class MarkdownParser:
         return result
 
     
-    #     node = TextNode(
-    #     "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
-    #     TextType.TEXT,
-    # )
-    # new_nodes = split_nodes_link([node])
-    # [
-    #     TextNode("This is text with a link ", TextType.TEXT),
-    #     TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
-    #     TextNode(" and ", TextType.TEXT),
-    #     TextNode(
-    #         "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
-    #     ),
-    # ]
-    
-    @staticmethod
-    def split_nodes_image(self, old_nodes):
-        raise NotImplementedError("Not implemented")
-   
    
     @staticmethod
     def split_nodes_link(self, old_nodes):
+        '''
+        Input: 
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.TEXT,
+        )
+        
+        new_nodes = split_nodes_link([node])
+        
+        
+        
+        Output:
+        [
+            TextNode("This is text with a link ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode(
+                "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+            ),
+        ]
+        '''
+        
         new_nodes = []
         for old_node in old_nodes:
             original_text = text = old_node.text
@@ -122,6 +126,61 @@ class MarkdownParser:
                    new_nodes.append(TextNode(rest_of_text, original_text_type))
                
                text = rest_of_text
+        return new_nodes
+    
+     
+    @staticmethod
+    def split_nodes_image(self, old_nodes):
+        '''
+        Example:
+        Input: 
+        node = TextNode(
+            "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
+            TextType.TEXT,
+        )
+        
+        new_nodes = split_nodes_image([node])
+        
+        
+        
+        Output:
+        [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode(
+                "obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+            ),
+        ]
+        '''
+        
+        new_nodes = []
+        for old_node in old_nodes:
+            original_text = text = old_node.text
+            original_text_type = old_node.text_type
+            
+            images = MarkdownParser.extract_markdown_images(self, original_text)
+            for image in images:
+               image_alt = image[0]
+               image_url = image[1]
+               last_image = images[-1]
+                
+               sections = text.split(f"![{image_alt}]({image_url})")
+               previous_non_image = sections[0]
+               rest_of_text = ""
+               
+               if len(sections) == 2:
+                   rest_of_text = sections[1]
+                
+               if previous_non_image:
+                   new_nodes.append(TextNode(sections[0], original_text_type))
+               new_nodes.append(TextNode(image_alt, TextType.IMAGE ,f"{image_url}"))
+               
+               if rest_of_text and (image is last_image):
+                   new_nodes.append(TextNode(rest_of_text, original_text_type))
+               
+               text = rest_of_text
+               
         return new_nodes
                
             

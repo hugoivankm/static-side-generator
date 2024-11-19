@@ -64,14 +64,13 @@ class TestMarkdownParser(unittest.TestCase):
         expected = [("to boot dev", "https://www.boot.dev"),
                     ("to youtube", "https://www.youtube.com/@bootdotdev")]
         self.assertEqual(actual, expected)
-        
-        
-    def test_split_nodes_link(self):
+
+    def test_split_nodes_link_should_pass_with_several_links(self):
         node = TextNode(
-        "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
-        TextType.TEXT,
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.TEXT,
         )
-        
+
         actual = MarkdownParser.split_nodes_link(self, [node])
         expected = [
             TextNode("This is text with a link ", TextType.TEXT),
@@ -81,30 +80,30 @@ class TestMarkdownParser(unittest.TestCase):
                 "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
             ),
         ]
-        
+
         self.assertEqual(actual, expected)
-        
+
     def test_split_nodes_link_should_pass_with_just_a_link(self):
         node = TextNode(
-        "[to youtube](https://www.youtube.com/@bootdotdev)",
-        TextType.TEXT,
+            "[to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.TEXT,
         )
-        
+
         actual = MarkdownParser.split_nodes_link(self, [node])
         expected = [
             TextNode(
                 "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
             ),
         ]
-        
+
         self.assertEqual(actual, expected)
-    
+
     def test_split_nodes_link_should_pass_with_just_a_link_and_prepended_text(self):
         node = TextNode(
-        "[prepended text](https://www.youtube.com/@bootdotdev)!!!",
-        TextType.TEXT,
+            "[prepended text](https://www.youtube.com/@bootdotdev)!!!",
+            TextType.TEXT,
         )
-        
+
         actual = MarkdownParser.split_nodes_link(self, [node])
         expected = [
             TextNode(
@@ -112,10 +111,58 @@ class TestMarkdownParser(unittest.TestCase):
             ),
             TextNode("!!!", TextType.TEXT),
         ]
-        
+
         self.assertEqual(actual, expected)
 
+    def test_split_nodes_image_should_pass_with_several_images(self):
+        node = TextNode(
+            "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
+            TextType.TEXT,
+        )
 
+        actual = MarkdownParser.split_nodes_image(self, [node])
+        expected = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("rick roll", TextType.IMAGE,
+                     "https://i.imgur.com/aKaOqIh.gif"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode(
+                "obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+            ),
+        ]
+
+        self.assertEqual(actual, expected)
+
+    def test_split_nodes_image_should_pass_with_a_single_image(self):
+        node = TextNode(
+            "![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
+            TextType.TEXT,
+        )
+
+        actual = MarkdownParser.split_nodes_image(self, [node])
+        expected = [
+            TextNode(
+                "obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+            ),
+        ]
+
+        self.assertEqual(actual, expected)
+        
+    def test_split_nodes_image_should_pass_with_prepended_text(self):
+        node = TextNode(
+        "![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)!!!",
+        TextType.TEXT,
+        )
+        
+        actual = MarkdownParser.split_nodes_image(self, [node])
+        expected = [
+            TextNode(
+                "obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+            ),
+            TextNode("!!!", TextType.TEXT)
+        ]
+        
+        self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
     unittest.main()
