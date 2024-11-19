@@ -50,19 +50,72 @@ class TestMarkdownParser(unittest.TestCase):
             '`',
             TextType.CODE
         )
+
     def test_extract_markdown_images_should_return_valid_tuple_list(self):
         text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
         actual = MarkdownParser.extract_markdown_images(self, text)
-        expected = [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
-        
+        expected = [("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
+                    ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
         self.assertEqual(actual, expected)
-        
+
     def test_extract_markdown_links_should_return_valid_tuple_list(self):
         text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
         actual = MarkdownParser.extract_markdown_links(self, text)
-        expected = [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+        expected = [("to boot dev", "https://www.boot.dev"),
+                    ("to youtube", "https://www.youtube.com/@bootdotdev")]
+        self.assertEqual(actual, expected)
+        
+        
+    def test_split_nodes_link(self):
+        node = TextNode(
+        "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+        TextType.TEXT,
+        )
+        
+        actual = MarkdownParser.split_nodes_link(self, [node])
+        expected = [
+            TextNode("This is text with a link ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode(
+                "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+            ),
+        ]
         
         self.assertEqual(actual, expected)
+        
+    def test_split_nodes_link_should_pass_with_just_a_link(self):
+        node = TextNode(
+        "[to youtube](https://www.youtube.com/@bootdotdev)",
+        TextType.TEXT,
+        )
+        
+        actual = MarkdownParser.split_nodes_link(self, [node])
+        expected = [
+            TextNode(
+                "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+            ),
+        ]
+        
+        self.assertEqual(actual, expected)
+    
+    def test_split_nodes_link_should_pass_with_just_a_link_and_prepended_text(self):
+        node = TextNode(
+        "[prepended text](https://www.youtube.com/@bootdotdev)!!!",
+        TextType.TEXT,
+        )
+        
+        actual = MarkdownParser.split_nodes_link(self, [node])
+        expected = [
+            TextNode(
+                "prepended text", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+            ),
+            TextNode("!!!", TextType.TEXT),
+        ]
+        
+        self.assertEqual(actual, expected)
+
+
 
 if __name__ == "__main__":
     unittest.main()

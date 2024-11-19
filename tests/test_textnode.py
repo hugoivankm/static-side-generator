@@ -79,5 +79,3 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(
             'TextNode("This is a text node", TextType.TEXT)', node.__repr__()
         )
-            
-        
