@@ -5,7 +5,7 @@ from src.markdown_parser import MarkdownParser
 
 
 class TestMarkdownParser(unittest.TestCase):
-    def test_with_single_code_element(self):
+    def test_split__node_delimiter_should_work_with_single_code_element(self):
         actual_list = MarkdownParser.split_nodes_delimiter(self,
                                                            [TextNode(
                                                                "This is text with a `code block` word", TextType.TEXT)],
@@ -16,8 +16,23 @@ class TestMarkdownParser(unittest.TestCase):
         expected = '[TextNode("This is text with a ", TextType.TEXT), TextNode("code block", TextType.CODE), TextNode(" word", TextType.TEXT),]'
         actual = MarkdownParser.to_node_list_repr(self, actual_list)
         self.assertEqual(actual, expected)
+    
+    def test_split__node_delimiter_should_work_with_previous_pure_text_node(self):
+        actual_list = MarkdownParser.split_nodes_delimiter(self,
+                                                           [
+                                                            TextNode("Hi", TextType.TEXT),
+                                                            TextNode(
+                                                               "This is text with a `code block` word", TextType.TEXT)],
+                                                           '`',
+                                                           TextType.CODE
+                                                           )
 
-    def test_with_node_bold_element_before_code_element(self):
+        expected = '[TextNode("Hi", TextType.TEXT), TextNode("This is text with a ", TextType.TEXT), TextNode("code block", TextType.CODE), TextNode(" word", TextType.TEXT),]'
+        actual = MarkdownParser.to_node_list_repr(self, actual_list)
+        self.assertEqual(actual, expected)
+
+
+    def test_split__node_delimiter_should_work_with_node_bold_element_before_code_element(self):
         actual_list = MarkdownParser.split_nodes_delimiter(self, [
             TextNode("**This is a bold title**", TextType.BOLD),
             TextNode("This is text with a `code block` word", TextType.TEXT)],
@@ -30,7 +45,7 @@ class TestMarkdownParser(unittest.TestCase):
 
         self.assertEqual(actual, expected)
 
-    def test_with_italic_element_after_code_element(self):
+    def test_split__node_delimiter_should_work_with_italic_element_after_code_element(self):
         actual_list = MarkdownParser.split_nodes_delimiter(self, [
             TextNode("This is text with a `code block` word", TextType.TEXT),
             TextNode("*This is an italic title*", TextType.ITALIC)],
@@ -147,13 +162,13 @@ class TestMarkdownParser(unittest.TestCase):
         ]
 
         self.assertEqual(actual, expected)
-        
+
     def test_split_nodes_image_should_pass_with_prepended_text(self):
         node = TextNode(
-        "![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)!!!",
-        TextType.TEXT,
+            "![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)!!!",
+            TextType.TEXT,
         )
-        
+
         actual = MarkdownParser.split_nodes_image(self, [node])
         expected = [
             TextNode(
@@ -161,7 +176,27 @@ class TestMarkdownParser(unittest.TestCase):
             ),
             TextNode("!!!", TextType.TEXT)
         ]
-        
+
+        self.assertEqual(actual, expected)
+
+    def test_text_to_text_nodes(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        actual = MarkdownParser.text_to_text_nodes(self, text)
+
+        expected = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE,
+                     "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
+
         self.assertEqual(actual, expected)
 
 if __name__ == "__main__":

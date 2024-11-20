@@ -70,3 +70,5 @@ class TextNode:
         for type in TextType:
             valid_text_nodes_type.append(type.value)
         return valid_text_nodes_type
+
+    

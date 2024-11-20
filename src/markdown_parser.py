@@ -8,7 +8,7 @@ class MarkdownParser:
         new_node = []
         for node in old_nodes:
             if node.text_type == TextType.TEXT:
-                sub_list = MarkdownParser.parse_text_to_node_list(self, node.text, delimiter, text_type)
+                sub_list = MarkdownParser._parse_text_to_node_list(self, node.text, delimiter, text_type)
                 new_node = [*new_node, *sub_list]
             else:
                 new_node.extend([node])
@@ -17,10 +17,13 @@ class MarkdownParser:
 
 
     @staticmethod
-    def parse_text_to_node_list(self, target: str, delimiter: str, text_type: TextType):
+    def _parse_text_to_node_list(self, target: str, delimiter: str, text_type: TextType):
         result = target.split(delimiter, 2)
         if len(result) < 3:
-            raise ValueError("Invalid Markdown Syntax")
+            if delimiter in target:
+                raise ValueError("Invalid Markdown Syntax")
+            else:
+                return [TextNode(target, TextType.TEXT)]
        
         result_list = [
                 TextNode(result[0], TextType.TEXT),
@@ -104,6 +107,11 @@ class MarkdownParser:
         for old_node in old_nodes:
             original_text = text = old_node.text
             original_text_type = old_node.text_type
+            links = MarkdownParser.extract_markdown_links(self, original_text)
+            
+            if (original_text_type is not TextType.TEXT) or not links:
+                new_nodes.append(old_node)
+                continue
             
             links = MarkdownParser.extract_markdown_links(self, original_text)
             for link in links:
@@ -160,6 +168,12 @@ class MarkdownParser:
             original_text_type = old_node.text_type
             
             images = MarkdownParser.extract_markdown_images(self, original_text)
+             
+            if (original_text_type is not TextType.TEXT) or not images:
+                new_nodes.append(old_node)
+                continue
+                
+            
             for image in images:
                image_alt = image[0]
                image_url = image[1]
@@ -183,5 +197,12 @@ class MarkdownParser:
                
         return new_nodes
                
-            
-               
+    @staticmethod        
+    def text_to_text_nodes(self, text):
+        inital_text_node = TextNode(text, TextType.TEXT)
+        previous_bold = MarkdownParser.split_nodes_delimiter(self, [inital_text_node], "**", TextType.BOLD)
+        previous_code = MarkdownParser.split_nodes_delimiter(self, previous_bold, "`", TextType.CODE)
+        previous_italic = MarkdownParser.split_nodes_delimiter(self, previous_code, "*", TextType.ITALIC)    
+        previous_images = MarkdownParser.split_nodes_image(self, previous_italic)
+        return MarkdownParser.split_nodes_link(self, previous_images)
+       
