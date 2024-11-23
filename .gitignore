@@ -1,3 +1,5 @@
 __pycache__/
 sample.*
 .vscode
+
+misc.py
