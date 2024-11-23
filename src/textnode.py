@@ -16,7 +16,7 @@ class TextNode:
 
     Attributes:
         text - The text content of the node
-        text_type - The type of text this node contains, which is a member of the TextType enum. You'll have to get the .value from the enum value you pass in.
+        text_type - The type of text this node contains, which is a member of the TextType enum. You'll have to get the value from the enum value you pass in.
         url - The URL of the link or image, if the text is a link. Default to None if nothing is passed in.
     """
     __Sentinel = object()

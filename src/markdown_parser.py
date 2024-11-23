@@ -2,6 +2,7 @@ from src.textnode import TextType, TextNode
 import re
 
 
+
 class MarkdownParser:
     @staticmethod
     def split_nodes_delimiter(self, old_nodes: list[TextNode], delimiter: str, text_type: TextType):
@@ -34,7 +35,7 @@ class MarkdownParser:
         return list(filter(lambda item: True if item.text else False, result_list))
 
     @staticmethod
-    def to_node_list_repr(self, list):
+    def to_node_list_repr(self, list : list[TextNode]):
         if len(list) < 1:
             return "[]"
         
@@ -44,7 +45,7 @@ class MarkdownParser:
         return f"[{representation}]"
 
     @staticmethod
-    def extract_markdown_images(self, text):
+    def extract_markdown_images(self, text: str):
         '''
         Example:
         Input:
@@ -61,7 +62,7 @@ class MarkdownParser:
             
                
     @staticmethod
-    def extract_markdown_links(self, text):
+    def extract_markdown_links(self, text: str):
 
         '''
         Example:
@@ -80,7 +81,7 @@ class MarkdownParser:
     
    
     @staticmethod
-    def split_nodes_link(self, old_nodes):
+    def split_nodes_link(self, old_nodes: list[TextNode]):
         '''
         Input: 
         node = TextNode(
@@ -138,7 +139,7 @@ class MarkdownParser:
     
      
     @staticmethod
-    def split_nodes_image(self, old_nodes):
+    def split_nodes_image(self, old_nodes: list[TextNode]):
         '''
         Example:
         Input: 
@@ -198,11 +199,26 @@ class MarkdownParser:
         return new_nodes
                
     @staticmethod        
-    def text_to_text_nodes(self, text):
+    def text_to_text_nodes(self, text: str):
         inital_text_node = TextNode(text, TextType.TEXT)
         previous_bold = MarkdownParser.split_nodes_delimiter(self, [inital_text_node], "**", TextType.BOLD)
         previous_code = MarkdownParser.split_nodes_delimiter(self, previous_bold, "`", TextType.CODE)
         previous_italic = MarkdownParser.split_nodes_delimiter(self, previous_code, "*", TextType.ITALIC)    
         previous_images = MarkdownParser.split_nodes_image(self, previous_italic)
         return MarkdownParser.split_nodes_link(self, previous_images)
-       
+
+    @staticmethod
+    def markdown_to_blocks(self, markdown: str):
+        blocks = markdown.split("\n\n")
+        filtered = filter(lambda line: line.strip() != '' ,blocks)
+        mapped = map(lambda block: MarkdownParser._strip_block(block) , filtered)
+        return list(mapped)
+        
+        
+    def _strip_block(block: list[str]):
+        lines = block.split("\n")
+        filtered = filter(lambda line: line.strip() != '' , lines)
+        return "\n".join(map(lambda line: line.strip(), filtered))
+        
+        
+        

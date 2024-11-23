@@ -16,13 +16,14 @@ class TestMarkdownParser(unittest.TestCase):
         expected = '[TextNode("This is text with a ", TextType.TEXT), TextNode("code block", TextType.CODE), TextNode(" word", TextType.TEXT),]'
         actual = MarkdownParser.to_node_list_repr(self, actual_list)
         self.assertEqual(actual, expected)
-    
+
     def test_split__node_delimiter_should_work_with_previous_pure_text_node(self):
         actual_list = MarkdownParser.split_nodes_delimiter(self,
                                                            [
-                                                            TextNode("Hi", TextType.TEXT),
-                                                            TextNode(
-                                                               "This is text with a `code block` word", TextType.TEXT)],
+                                                               TextNode(
+                                                                   "Hi", TextType.TEXT),
+                                                               TextNode(
+                                                                   "This is text with a `code block` word", TextType.TEXT)],
                                                            '`',
                                                            TextType.CODE
                                                            )
@@ -30,7 +31,6 @@ class TestMarkdownParser(unittest.TestCase):
         expected = '[TextNode("Hi", TextType.TEXT), TextNode("This is text with a ", TextType.TEXT), TextNode("code block", TextType.CODE), TextNode(" word", TextType.TEXT),]'
         actual = MarkdownParser.to_node_list_repr(self, actual_list)
         self.assertEqual(actual, expected)
-
 
     def test_split__node_delimiter_should_work_with_node_bold_element_before_code_element(self):
         actual_list = MarkdownParser.split_nodes_delimiter(self, [
@@ -198,6 +198,24 @@ class TestMarkdownParser(unittest.TestCase):
         ]
 
         self.assertEqual(actual, expected)
+
+    def test_markdown_to_blocks(self):
+        markdown =  """
+                   # This is a heading
+                   
+
+                   This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+
+                   * This is the first list item in a list block
+                   * This is a list item
+                   * This is another list item        
+                """
+        actual = MarkdownParser.markdown_to_blocks(self, markdown)
+        expected = ["# This is a heading", "This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
+                    "* This is the first list item in a list block\n* This is a list item\n* This is another list item"]
+
+        self.assertEqual(actual, expected)
+
 
 if __name__ == "__main__":
     unittest.main()
