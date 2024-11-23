@@ -1,8 +1,6 @@
 from src.textnode import TextType, TextNode
 import re
 
-
-
 class MarkdownParser:
     @staticmethod
     def split_nodes_delimiter(self, old_nodes: list[TextNode], delimiter: str, text_type: TextType):
@@ -14,8 +12,6 @@ class MarkdownParser:
             else:
                 new_node.extend([node])
         return new_node
-
-
 
     @staticmethod
     def _parse_text_to_node_list(self, target: str, delimiter: str, text_type: TextType):
@@ -214,11 +210,15 @@ class MarkdownParser:
         mapped = map(lambda block: MarkdownParser._strip_block(block) , filtered)
         return list(mapped)
         
-        
+    @staticmethod
     def _strip_block(block: list[str]):
         lines = block.split("\n")
         filtered = filter(lambda line: line.strip() != '' , lines)
         return "\n".join(map(lambda line: line.strip(), filtered))
+    
+    @staticmethod
+    def markdown_to_html_node(markdown: str):
+        pass
         
-        
+      
         

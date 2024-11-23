@@ -20,7 +20,7 @@ class ParentNode(HTMLNode):
     def to_html(self):        
         innerHTML = ""
         for child in self.children:
-            if isinstance(child, LeafNode) or isinstance(child, ParentNode):       
+            if isinstance(child, HTMLNode):   
                 innerHTML += child.to_html()
             else:
                 raise ValueError("Invalid Child Property")
