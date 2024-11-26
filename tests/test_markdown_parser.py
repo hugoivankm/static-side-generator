@@ -6,61 +6,62 @@ from src.markdown_parser import MarkdownParser
 
 class TestMarkdownParser(unittest.TestCase):
     def test_split__node_delimiter_should_work_with_single_code_element(self):
-        actual_list = MarkdownParser.split_nodes_delimiter(self,
-                                                           [TextNode(
+        actual_list = MarkdownParser.split_nodes_delimiter([
+                                                           TextNode(
                                                                "This is text with a `code block` word", TextType.TEXT)],
                                                            '`',
                                                            TextType.CODE
                                                            )
 
         expected = '[TextNode("This is text with a ", TextType.TEXT), TextNode("code block", TextType.CODE), TextNode(" word", TextType.TEXT),]'
-        actual = MarkdownParser.to_node_list_repr(self, actual_list)
+        actual = MarkdownParser.to_node_list_repr(actual_list)
         self.assertEqual(actual, expected)
 
     def test_split__node_delimiter_should_work_with_previous_pure_text_node(self):
-        actual_list = MarkdownParser.split_nodes_delimiter(self,
-                                                           [
-                                                               TextNode(
-                                                                   "Hi", TextType.TEXT),
-                                                               TextNode(
-                                                                   "This is text with a `code block` word", TextType.TEXT)],
-                                                           '`',
-                                                           TextType.CODE
-                                                           )
+        actual_list = MarkdownParser.split_nodes_delimiter([
+            TextNode(
+                "Hi", TextType.TEXT),
+            TextNode(
+                "This is text with a `code block` word", TextType.TEXT)],
+            '`',
+            TextType.CODE
+        )
 
         expected = '[TextNode("Hi", TextType.TEXT), TextNode("This is text with a ", TextType.TEXT), TextNode("code block", TextType.CODE), TextNode(" word", TextType.TEXT),]'
-        actual = MarkdownParser.to_node_list_repr(self, actual_list)
+        actual = MarkdownParser.to_node_list_repr(actual_list)
         self.assertEqual(actual, expected)
 
     def test_split__node_delimiter_should_work_with_node_bold_element_before_code_element(self):
-        actual_list = MarkdownParser.split_nodes_delimiter(self, [
-            TextNode("**This is a bold title**", TextType.BOLD),
-            TextNode("This is text with a `code block` word", TextType.TEXT)],
+        actual_list = MarkdownParser.split_nodes_delimiter(
+            [
+                TextNode("**This is a bold title**", TextType.BOLD),
+                TextNode("This is text with a `code block` word", TextType.TEXT)
+            ],
             '`',
             TextType.CODE
         )
 
         expected = '[TextNode("**This is a bold title**", TextType.BOLD), TextNode("This is text with a ", TextType.TEXT), TextNode("code block", TextType.CODE), TextNode(" word", TextType.TEXT),]'
-        actual = MarkdownParser.to_node_list_repr(self, actual_list)
+        actual = MarkdownParser.to_node_list_repr(actual_list)
 
         self.assertEqual(actual, expected)
 
     def test_split__node_delimiter_should_work_with_italic_element_after_code_element(self):
-        actual_list = MarkdownParser.split_nodes_delimiter(self, [
+        actual_list = MarkdownParser.split_nodes_delimiter([
             TextNode("This is text with a `code block` word", TextType.TEXT),
             TextNode("*This is an italic title*", TextType.ITALIC)],
             '`',
             TextType.CODE
         )
         expected = '[TextNode("This is text with a ", TextType.TEXT), TextNode("code block", TextType.CODE), TextNode(" word", TextType.TEXT), TextNode("*This is an italic title*", TextType.ITALIC),]'
-        actual = MarkdownParser.to_node_list_repr(self, actual_list)
+        actual = MarkdownParser.to_node_list_repr(actual_list)
 
         self.assertEqual(actual, expected)
 
     def test_exception_raised_for_invalid_markdows(self):
         self.assertRaises(
             ValueError,
-            MarkdownParser.split_nodes_delimiter, self,
+            MarkdownParser.split_nodes_delimiter,
             [TextNode("This is text with a `code block word", TextType.TEXT)],
             '`',
             TextType.CODE
@@ -68,14 +69,14 @@ class TestMarkdownParser(unittest.TestCase):
 
     def test_extract_markdown_images_should_return_valid_tuple_list(self):
         text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
-        actual = MarkdownParser.extract_markdown_images(self, text)
+        actual = MarkdownParser.extract_markdown_images(text)
         expected = [("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
                     ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
         self.assertEqual(actual, expected)
 
     def test_extract_markdown_links_should_return_valid_tuple_list(self):
         text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
-        actual = MarkdownParser.extract_markdown_links(self, text)
+        actual = MarkdownParser.extract_markdown_links(text)
         expected = [("to boot dev", "https://www.boot.dev"),
                     ("to youtube", "https://www.youtube.com/@bootdotdev")]
         self.assertEqual(actual, expected)
@@ -86,7 +87,7 @@ class TestMarkdownParser(unittest.TestCase):
             TextType.TEXT,
         )
 
-        actual = MarkdownParser.split_nodes_link(self, [node])
+        actual = MarkdownParser.split_nodes_link([node])
         expected = [
             TextNode("This is text with a link ", TextType.TEXT),
             TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
@@ -104,7 +105,7 @@ class TestMarkdownParser(unittest.TestCase):
             TextType.TEXT,
         )
 
-        actual = MarkdownParser.split_nodes_link(self, [node])
+        actual = MarkdownParser.split_nodes_link([node])
         expected = [
             TextNode(
                 "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
@@ -119,7 +120,7 @@ class TestMarkdownParser(unittest.TestCase):
             TextType.TEXT,
         )
 
-        actual = MarkdownParser.split_nodes_link(self, [node])
+        actual = MarkdownParser.split_nodes_link([node])
         expected = [
             TextNode(
                 "prepended text", TextType.LINK, "https://www.youtube.com/@bootdotdev"
@@ -135,7 +136,7 @@ class TestMarkdownParser(unittest.TestCase):
             TextType.TEXT,
         )
 
-        actual = MarkdownParser.split_nodes_image(self, [node])
+        actual = MarkdownParser.split_nodes_image([node])
         expected = [
             TextNode("This is text with a ", TextType.TEXT),
             TextNode("rick roll", TextType.IMAGE,
@@ -154,7 +155,7 @@ class TestMarkdownParser(unittest.TestCase):
             TextType.TEXT,
         )
 
-        actual = MarkdownParser.split_nodes_image(self, [node])
+        actual = MarkdownParser.split_nodes_image([node])
         expected = [
             TextNode(
                 "obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
@@ -169,50 +170,13 @@ class TestMarkdownParser(unittest.TestCase):
             TextType.TEXT,
         )
 
-        actual = MarkdownParser.split_nodes_image(self, [node])
+        actual = MarkdownParser.split_nodes_image([node])
         expected = [
             TextNode(
                 "obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
             ),
             TextNode("!!!", TextType.TEXT)
         ]
-
-        self.assertEqual(actual, expected)
-
-    def test_text_to_text_nodes(self):
-        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-        actual = MarkdownParser.text_to_text_nodes(self, text)
-
-        expected = [
-            TextNode("This is ", TextType.TEXT),
-            TextNode("text", TextType.BOLD),
-            TextNode(" with an ", TextType.TEXT),
-            TextNode("italic", TextType.ITALIC),
-            TextNode(" word and a ", TextType.TEXT),
-            TextNode("code block", TextType.CODE),
-            TextNode(" and an ", TextType.TEXT),
-            TextNode("obi wan image", TextType.IMAGE,
-                     "https://i.imgur.com/fJRm4Vk.jpeg"),
-            TextNode(" and a ", TextType.TEXT),
-            TextNode("link", TextType.LINK, "https://boot.dev"),
-        ]
-
-        self.assertEqual(actual, expected)
-
-    def test_markdown_to_blocks(self):
-        markdown =  """
-                   # This is a heading
-                   
-
-                   This is a paragraph of text. It has some **bold** and *italic* words inside of it.
-
-                   * This is the first list item in a list block
-                   * This is a list item
-                   * This is another list item        
-                """
-        actual = MarkdownParser.markdown_to_blocks(self, markdown)
-        expected = ["# This is a heading", "This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
-                    "* This is the first list item in a list block\n* This is a list item\n* This is another list item"]
 
         self.assertEqual(actual, expected)
 

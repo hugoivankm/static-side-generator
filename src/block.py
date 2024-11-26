@@ -1,4 +1,10 @@
 from enum import Enum
+from src.htmlnode import HTMLNode
+from src.parentnode import ParentNode, HTMLNode
+from src.textnode import TextNode
+from src.leafnode import LeafNode
+from typing import Pattern
+from src.markdown_parser import MarkdownParser
 import re
 
 
@@ -34,7 +40,7 @@ class Block:
         return self.content == other.content and self.block_type == other.block_type
 
     @staticmethod
-    def block_to_block_type(markdown_block):
+    def block_to_block_type(markdown_block: str):
         block_re_dict = {
             BlockType.HEADING: (r"^#{1,6} (.+)", 'single'),
             BlockType.CODE: (r"^```\n?.+\n?```$", 'single'),
@@ -43,7 +49,7 @@ class Block:
             BlockType.ORDEREDLIST: (r"^\d+.\s(.+)$", 'multi'),
         }
 
-        # pattern is a BlockTYpe
+        # pattern is a BlockType
         for pattern in block_re_dict:
             regex = block_re_dict[pattern][0]
             multiline = block_re_dict[pattern][1]
@@ -58,3 +64,95 @@ class Block:
             return bool(re.match(pattern, markdown, re.MULTILINE))
         else:
             return bool(re.match(pattern, markdown))
+        
+    
+    @staticmethod
+    def markdown_to_blocks(markdown: str) -> list[str]:
+        lines = [line.strip() for line in markdown.splitlines()]
+        markdown = "\n".join(lines).strip()
+        split_lines = markdown.split("\n\n")
+        return split_lines
+    
+        
+    @staticmethod
+    def _strip_block(block: list[str]):
+        lines = block.split("\n")
+        filtered = filter(lambda line: line.strip() != '' , lines)
+        return "\n".join(map(lambda line: line.strip(), filtered))
+    
+    @staticmethod
+    def markdown_to_html_nodes(markdown: str) -> ParentNode:     
+        block_strings = Block.markdown_to_blocks(markdown)
+        children = []
+        for block_string in block_strings:
+            children.append(Block.text_to_child(block_string))
+        return ParentNode('div', children)
+            
+                   
+    @staticmethod
+    def text_to_child(text: str) -> HTMLNode:
+        '''
+        Takes the text of a markdown block and retuns the respective HTMLNode 
+        '''
+        block_type = Block.block_to_block_type(text)
+        html_node: HTMLNode = None
+        match block_type:
+            case 'heading':
+                heading_type = Block._parse_heading_type_from_text(text)
+                text = Block._remove_char_and_strip(text, r'#{1,6} ')
+                children = Block._text_to_HTMLNode_list(text)
+                html_node = ParentNode(heading_type, children)
+            case 'code':
+                text = Block._remove_char_and_strip(text, r'`(.+?)`')
+                children = LeafNode('code', text)
+                html_node = ParentNode('pre', children)
+            case 'quote':
+                text =  Block._remove_char_and_strip(text, r'> ')
+                children = Block._text_to_HTMLNode_list(text)
+                html_node = ParentNode("blockquote", children)
+            case 'unordered list':
+                text = Block._remove_char_and_strip(text, r"\* ")
+                children = Block._parse_list_items(text)
+                html_node = ParentNode('ul', children)
+            case 'ordered list':
+                text = Block._remove_char_and_strip(text, r"\d+\.\s+")
+                children = Block._parse_list_items(text)
+                html_node = ParentNode('ol', children)
+            case 'paragraph':
+                children = Block._text_to_HTMLNode_list(text)
+                html_node = ParentNode('p', children)
+            case _:
+                raise ValueError("Block is not supported")
+        return html_node
+    
+    @staticmethod
+    def _text_to_HTMLNode_list(text) -> list[HTMLNode]:
+        text_nodes = MarkdownParser.text_to_text_nodes(text)
+        mapped_html_nodes = map(lambda node: TextNode.text_node_to_html_node(node), text_nodes)
+        return list(mapped_html_nodes)
+        
+    
+    @staticmethod
+    def _parse_heading_type_from_text(heading_text: str) -> str:
+        regex = re.match(r"^#{1,6}", heading_text)
+        if not regex:
+            raise ValueError("Value is not a headring")
+        span = regex.span()
+        return f"h{(span[1] - span[0])}"
+    
+    @staticmethod
+    def _parse_list_items(items: str) -> list[ParentNode]:
+        if not items.strip():
+            raise ValueError("items parameter must have a non empty value")
+        li_list = []
+        list_items: list[str] = items.split("\n")
+        for item in list_items:
+            li_list.append(ParentNode('li', children=Block._text_to_HTMLNode_list(item)))
+        return li_list
+
+    @staticmethod
+    def _remove_char_and_strip(text , pattern: Pattern[str]):
+        return re.sub(pattern, "", text)
+        
+        
+        

@@ -1,7 +1,7 @@
 from src.htmlnode import HTMLNode
 
 class LeafNode(HTMLNode):
-    def __init__(self, tag, value, props=None) -> None:
+    def __init__(self, tag: str, value: str, props=None) -> None:
         if value is None:
             raise ValueError("All leaf nodes must have a value")
         super().__init__(tag, value, None, props)
@@ -13,8 +13,9 @@ class LeafNode(HTMLNode):
             return f"<{self.tag}>{self.value}</{self.tag}>" 
         return f"<{self.tag} {self.props_to_html()}>{self.value}</{self.tag}>"
     
-    def __repr__(self) -> str:
-        return super().__repr__()
+    def __repr__(self):
+        return f'LeafNode(tag="{self.tag}", value="{self.value}", props="{self.props}")'
+    
     
     def __eq__(self, other: object) -> bool:
         return super().__eq__(other)
