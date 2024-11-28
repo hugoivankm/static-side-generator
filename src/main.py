@@ -1,11 +1,11 @@
-from textnode import TextNode
+from utilities.copy_dir_from_src_to_dst import copy_directory_from_src_to_dest
 
 def main():
-   try:
-       text_node = TextNode("This is a text node", "text", "https://www.boot.dev")
-       print(text_node)
-   except ValueError as e:
-       print(e)
-    
+    try:
+        copy_directory_from_src_to_dest('static/', 'public/')
+    except Exception as e:
+        print(e)
+        
+
 if __name__ == "__main__":
     main()
