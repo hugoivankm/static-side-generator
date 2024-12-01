@@ -7,7 +7,7 @@ class TestPageGenerator(unittest.TestCase):
     def test_generate_page(self):
         
         def clean_up():
-            pattern = "content_"
+            pattern = "index.html"
             directory = "./tests/testing-data/"
             for filename in os.listdir(directory):
                 if filename.startswith(pattern):
@@ -18,12 +18,11 @@ class TestPageGenerator(unittest.TestCase):
         
         
         def get_filename():
-            pattern = "content_"
+            pattern = "index.html"
             directory = "./tests/testing-data/"
             for filename in os.listdir(directory):
                 if filename.startswith(pattern):
-                    return filename 
-                
+                    return filename        
             return None
         
         
