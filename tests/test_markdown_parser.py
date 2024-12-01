@@ -179,6 +179,48 @@ class TestMarkdownParser(unittest.TestCase):
         ]
 
         self.assertEqual(actual, expected)
+    
+    
+    def test_extract_title_should_return_valid_h1_header_from_markdown(self):
+        markdown = """
+        # This is an h1 heading       
+
+        ** Some bold text** :D
+
+        > A nice quote
+
+        ## An h2 heading
+        """
+        actual = MarkdownParser.extract_title(markdown)
+        expected = "This is an h1 heading"
+        self.assertEqual(actual, expected)
+        
+    
+    def test_extract_title_should_return_valid_h1_header_even_if_not_in_first_line(self):
+        markdown = """
+        ** Some bold text** :D
+        
+        # This is an h1 heading ** but not in the first line **
+
+        > A nice quote
+
+        ## An h2 heading
+        """
+        actual = MarkdownParser.extract_title(markdown)
+        expected = "This is an h1 heading ** but not in the first line **"
+        
+        self.assertEqual(actual, expected)
+        
+    def test_extract_title_should_raise_exception_for(self):
+        markdown = """
+        ** Some bold text** :D
+
+        > A nice quote
+
+        ## An h2 heading
+        """
+        
+        self.assertRaises(ValueError, MarkdownParser.extract_title, markdown)
 
 
 if __name__ == "__main__":

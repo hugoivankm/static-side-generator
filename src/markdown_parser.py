@@ -208,3 +208,29 @@ class MarkdownParser:
         previous_images = MarkdownParser.split_nodes_image(
             previous_italic)
         return MarkdownParser.split_nodes_link(previous_images)
+    
+    @staticmethod
+    def extract_title(markdown: str) -> str:
+        """ Method to extract h1 header from markdown
+
+        Args:
+            markdown (str): A string that contains valid markdown with an h1 header
+
+        Returns:
+            str: Content of the first header found in the document
+        """
+        from src.block import Block, BlockType          
+        blocks =  Block.markdown_to_blocks(markdown)
+        for block in blocks:
+            block_type = Block.block_to_block_type(block)
+            if block_type is BlockType.HEADING.value and MarkdownParser._is_h1(block):
+                return block.split(" ", maxsplit=1)[1]
+        raise ValueError("markdown does not contain a corresponding h1 heading")
+    
+    
+    @staticmethod
+    def _is_h1(header_text: str ) -> bool:
+        header_text = header_text.strip()
+        h1_regex = r"^#\s+\w+"
+        return bool(re.search(h1_regex, header_text))
+        
