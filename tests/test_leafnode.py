@@ -1,5 +1,11 @@
 import unittest
-from src.leafnode import LeafNode
+import sys
+import os
+
+# Add the `src` directory to the sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
+from leafnode import LeafNode
 
 class TestLeafNode(unittest.TestCase):
     def test_can_create_leaf_node_p(self):

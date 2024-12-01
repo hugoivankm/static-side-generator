@@ -1,10 +1,10 @@
 from enum import Enum
-from src.htmlnode import HTMLNode
-from src.parentnode import ParentNode, HTMLNode
-from src.textnode import TextNode
-from src.leafnode import LeafNode
+from htmlnode import HTMLNode
+from parentnode import ParentNode, HTMLNode
+from textnode import TextNode
+from leafnode import LeafNode
+from markdown_parser import MarkdownParser
 from typing import Pattern
-from src.markdown_parser import MarkdownParser
 import re
 
 

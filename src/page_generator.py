@@ -1,5 +1,5 @@
-from src.block import Block
-from src.markdown_parser import MarkdownParser
+from block import Block
+from markdown_parser import MarkdownParser
 from typing import Callable
 import os
 
@@ -51,6 +51,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
     if not os.path.isdir(dest_path):
         raise ValueError("Destination Path must be a valid directory")
     
+
     dest_file = os.path.join(dest_path, "index.html")
     with open(dest_file, 'w') as dest:
         dest.write(template)

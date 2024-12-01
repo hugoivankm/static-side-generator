@@ -1,7 +1,12 @@
 import unittest
+import sys
+import os
 
-from src.textnode import TextType, TextNode
-from src.markdown_parser import MarkdownParser
+# Add the `src` directory to the sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
+from textnode import TextType, TextNode
+from markdown_parser import MarkdownParser
 
 
 class TestMarkdownParser(unittest.TestCase):

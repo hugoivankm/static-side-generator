@@ -1,8 +1,14 @@
 import unittest
+import sys
+import os
+
+# Add the `src` directory to the sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
 from enum import Enum
 
-from src.textnode import TextNode, TextType
-from src.htmlnode import HTMLNode
+from textnode import TextNode, TextType
+from htmlnode import HTMLNode
 
 
 class TextTypeWithError(Enum):

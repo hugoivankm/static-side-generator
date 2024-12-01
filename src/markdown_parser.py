@@ -1,4 +1,4 @@
-from src.textnode import TextType, TextNode
+from textnode import TextType, TextNode
 import re
 
 
@@ -219,7 +219,7 @@ class MarkdownParser:
         Returns:
             str: Content of the first header found in the document
         """
-        from src.block import Block, BlockType          
+        from block import Block, BlockType          
         blocks =  Block.markdown_to_blocks(markdown)
         for block in blocks:
             block_type = Block.block_to_block_type(block)

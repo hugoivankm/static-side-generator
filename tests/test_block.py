@@ -1,9 +1,15 @@
 import unittest
-from src.block import Block, BlockType
-from src.markdown_parser import MarkdownParser
-from src.textnode import TextType, TextNode
-from src.parentnode import ParentNode
-from src.leafnode import LeafNode
+import sys
+import os
+
+# Add the `src` directory to the sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
+from block import Block, BlockType
+from markdown_parser import MarkdownParser
+from textnode import TextType, TextNode
+from parentnode import ParentNode
+from leafnode import LeafNode
 
 
 class TestTextNode(unittest.TestCase):
