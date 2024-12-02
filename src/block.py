@@ -73,12 +73,6 @@ class Block:
         return split_lines
 
     @staticmethod
-    def _strip_block(block: list[str]):
-        lines = block.split("\n")
-        filtered = filter(lambda line: line.strip() != '', lines)
-        return "\n".join(map(lambda line: line.strip(), filtered))
-
-    @staticmethod
     def markdown_to_html_node(markdown: str) -> ParentNode:
         block_strings = Block.markdown_to_blocks(markdown)
         children = []
