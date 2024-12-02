@@ -43,7 +43,7 @@ class Block:
     def block_to_block_type(markdown_block: str):
         block_re_dict = {
             BlockType.HEADING: (r"^#{1,6} (.+)", 'single'),
-            BlockType.CODE: (r"^```\n?.+\n?```$", 'single'),
+            BlockType.CODE: (r"```(?:[^```]+|`(?!``)|``(?!`))*```", 'single'),
             BlockType.QUOTE: (r"^>(.*?)", 'single'),
             BlockType.UNORDERED_LIST: (r"^(\*|-) (.*)$", 'multi'),
             BlockType.ORDEREDLIST: (r"^\d+.\s(.+)$", 'multi'),
@@ -83,11 +83,10 @@ class Block:
         block_strings = Block.markdown_to_blocks(markdown)
         children = []
         for block_string in block_strings:
-            children.append(Block.text_to_child(block_string))
+            html_node = Block.text_to_child(block_string)
+            children.append(html_node)   
         return ParentNode('div', children)
     
-    
-
     @staticmethod
     def text_to_child(text: str) -> HTMLNode:
         '''
@@ -98,23 +97,24 @@ class Block:
         match block_type:
             case 'heading':
                 heading_type = Block._parse_heading_type_from_text(text)
-                text = Block._remove_char_and_strip(text, r'#{1,6} ')
+                text = Block._strip_sequence(text, r'#{1,6} ')
                 children = Block._text_to_HTMLNode_list(text)
                 html_node = ParentNode(heading_type, children)
             case 'code':
-                text = Block._remove_char_and_strip(text, r'`(.+?)`')
-                children = LeafNode('code', text)
+                text = Block._strip_sequence(text, r"```\s*|\s*```")
+                children = [LeafNode('code', text)]
                 html_node = ParentNode('pre', children)
             case 'quote':
-                text = Block._remove_char_and_strip(text, r'> ')
+                text = text.strip()
+                text = Block._strip_sequence(text, r'> ')
                 children = Block._text_to_HTMLNode_list(text)
                 html_node = ParentNode("blockquote", children)
             case 'unordered list':
-                text = Block._remove_char_and_strip(text, r"\* ")
+                text = Block._strip_sequence(text, r"\* ")
                 children = Block._parse_list_items(text)
                 html_node = ParentNode('ul', children)
             case 'ordered list':
-                text = Block._remove_char_and_strip(text, r"\d+\.\s+")
+                text = Block._strip_sequence(text, r"\d+\.\s+")
                 children = Block._parse_list_items(text)
                 html_node = ParentNode('ol', children)
             case 'paragraph':
@@ -151,5 +151,6 @@ class Block:
         return li_list
 
     @staticmethod
-    def _remove_char_and_strip(text, pattern: Pattern[str]):
-        return re.sub(pattern, "", text)
+    def _strip_sequence(text: str, pattern: Pattern[str]) -> str:
+        compiled_pattern = re.compile(pattern)
+        return re.sub(compiled_pattern, "", text)

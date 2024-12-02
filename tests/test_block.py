@@ -8,11 +8,10 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
 from block import Block, BlockType
 from markdown_parser import MarkdownParser
 from textnode import TextType, TextNode
-from parentnode import ParentNode
-from leafnode import LeafNode
 
 
-class TestTextNode(unittest.TestCase):
+
+class TestBlock(unittest.TestCase):
     def test_eq(self):
         node1 = Block("This is a paragraph", BlockType.PARAGRAPH)
         node2 = Block("This is a paragraph", BlockType.PARAGRAPH)
@@ -114,13 +113,16 @@ class TestTextNode(unittest.TestCase):
                    
                    ## This is a different heading
                    
-                    ```code```
+                    ``` 
+                    print("hello there")
+                    ```
                              
                    1. ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)
                    2. [google](google.com)
     
                 """
+                
         actual = Block.markdown_to_html_node(markdown).__repr__()
-        expected = '''ParentNode(tag="div", children="[ParentNode(tag="h1", children="[LeafNode(tag="None", value="This is a heading", props="None")]", props="None"), ParentNode(tag="h2", children="[LeafNode(tag="None", value="This is a different heading", props="None")]", props="None"), ParentNode(tag="pre", children="LeafNode(tag="code", value="code", props="None")", props="None"), ParentNode(tag="ol", children="[ParentNode(tag="li", children="[LeafNode(tag="img", value="", props="{'alt': 'obi wan', 'src': 'https://i.imgur.com/fJRm4Vk.jpeg'}")]", props="None"), ParentNode(tag="li", children="[LeafNode(tag="a", value="google", props="{'href': 'google.com'}")]", props="None")]", props="None")]", props="None")'''
-
+        expected = '''ParentNode(tag="div", children="[ParentNode(tag="h1", children="[LeafNode(tag="None", value="This is a heading", props="None")]", props="None"), ParentNode(tag="h2", children="[LeafNode(tag="None", value="This is a different heading", props="None")]", props="None"), ParentNode(tag="pre", children="LeafNode(tag="code", value="print("hello there")", props="None")", props="None"), ParentNode(tag="ol", children="[ParentNode(tag="li", children="[LeafNode(tag="img", value="", props="{'alt': 'obi wan', 'src': 'https://i.imgur.com/fJRm4Vk.jpeg'}")]", props="None"), ParentNode(tag="li", children="[LeafNode(tag="a", value="google", props="{'href': 'google.com'}")]", props="None")]", props="None")]", props="None")'''
+        
         self.assertEqual(actual, expected)
