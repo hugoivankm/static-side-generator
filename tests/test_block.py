@@ -3,12 +3,12 @@ import sys
 import os
 
 # Add the `src` directory to the sys.path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', 'src')))
 
-from block import Block, BlockType
-from markdown_parser import MarkdownParser
 from textnode import TextType, TextNode
-
+from markdown_parser import MarkdownParser
+from block import Block, BlockType
 
 
 class TestBlock(unittest.TestCase):
@@ -46,13 +46,12 @@ class TestBlock(unittest.TestCase):
         actual = Block.block_to_block_type(ordered_list)
         expected = "ordered list"
         self.assertEqual(actual, expected)
-        
-        
+
         unordered_list = "* First Item\n* Second Item\n* Third Item"
         actual = Block.block_to_block_type(unordered_list)
         expected = "unordered list"
         self.assertEqual(actual, expected)
-    
+
     def test_text_to_text_nodes(self):
         text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
         actual = MarkdownParser.text_to_text_nodes(text)
@@ -74,7 +73,7 @@ class TestBlock(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_markdown_to_blocks(self):
-        markdown =  """# This is a heading
+        markdown = """# This is a heading
                    
                    This is a paragraph of text. It has some **bold** and *italic* words inside of it.
 
@@ -87,10 +86,9 @@ class TestBlock(unittest.TestCase):
                 """
         actual = Block.markdown_to_blocks(markdown)
         expected = ["# This is a heading", "This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
-                    "* This is the first list item in a list block\n* This is a list item\n* This is another list item","1. First Item\n2. Second Item"]
+                    "* This is the first list item in a list block\n* This is a list item\n* This is another list item", "1. First Item\n2. Second Item"]
 
         self.assertEqual(actual, expected)
-        
 
     def test_markdown_to_html_node_with_heading_paragraph_and_unordered_list(self):
         markdown = """
@@ -104,9 +102,9 @@ class TestBlock(unittest.TestCase):
                 """
         actual = Block.markdown_to_html_node(markdown).__repr__()
         expected = '''ParentNode(tag="div", children="[ParentNode(tag="h1", children="[LeafNode(tag="None", value="This is a heading", props="None")]", props="None"), ParentNode(tag="p", children="[LeafNode(tag="None", value="This is a paragraph of text. It has some ", props="None"), LeafNode(tag="b", value="bold", props="None"), LeafNode(tag="None", value=" and ", props="None"), LeafNode(tag="i", value="italic", props="None"), LeafNode(tag="None", value=" words inside of it.", props="None")]", props="None"), ParentNode(tag="ul", children="[ParentNode(tag="li", children="[LeafNode(tag="None", value="This is the first list item in a list block", props="None")]", props="None"), ParentNode(tag="li", children="[LeafNode(tag="None", value="This is a list item", props="None")]", props="None"), ParentNode(tag="li", children="[LeafNode(tag="None", value="This is another list item", props="None")]", props="None")]", props="None")]", props="None")'''
-        
-        self.assertEqual(actual, expected)        
-    
+
+        self.assertEqual(actual, expected)
+
     def test_markdown_to_html_node_with_headings_code_and_ordered_list_of_images_and_links(self):
         markdown = """
                    # This is a heading
@@ -121,8 +119,8 @@ class TestBlock(unittest.TestCase):
                    2. [google](google.com)
     
                 """
-                
+
         actual = Block.markdown_to_html_node(markdown).__repr__()
-        expected = '''ParentNode(tag="div", children="[ParentNode(tag="h1", children="[LeafNode(tag="None", value="This is a heading", props="None")]", props="None"), ParentNode(tag="h2", children="[LeafNode(tag="None", value="This is a different heading", props="None")]", props="None"), ParentNode(tag="pre", children="LeafNode(tag="code", value="print("hello there")", props="None")", props="None"), ParentNode(tag="ol", children="[ParentNode(tag="li", children="[LeafNode(tag="img", value="", props="{'alt': 'obi wan', 'src': 'https://i.imgur.com/fJRm4Vk.jpeg'}")]", props="None"), ParentNode(tag="li", children="[LeafNode(tag="a", value="google", props="{'href': 'google.com'}")]", props="None")]", props="None")]", props="None")'''
-        
+        expected = '''ParentNode(tag="div", children="[ParentNode(tag="h1", children="[LeafNode(tag="None", value="This is a heading", props="None")]", props="None"), ParentNode(tag="h2", children="[LeafNode(tag="None", value="This is a different heading", props="None")]", props="None"), ParentNode(tag="pre", children="[LeafNode(tag="code", value="\nprint("hello there")", props="None")]", props="None"), ParentNode(tag="ol", children="[ParentNode(tag="li", children="[LeafNode(tag="img", value="", props="{'alt': 'obi wan', 'src': 'https://i.imgur.com/fJRm4Vk.jpeg'}")]", props="None"), ParentNode(tag="li", children="[LeafNode(tag="a", value="google", props="{'href': 'google.com'}")]", props="None")]", props="None")]", props="None")'''
+
         self.assertEqual(actual, expected)

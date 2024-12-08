@@ -66,11 +66,36 @@ class Block:
             return bool(re.match(pattern, markdown))
 
     @staticmethod
+    def _remove_extra_spacing(text: str) -> str:
+        pattern = re.compile(r'\n\s+ | \s+\n')
+        return re.sub(pattern, '\n', text)
+
+    @staticmethod
     def markdown_to_blocks(markdown: str) -> list[str]:
-        lines = [line.strip() for line in markdown.splitlines()]
-        markdown = "\n".join(lines).strip()
-        split_lines = markdown.split("\n\n")
-        return split_lines
+        # Fix additional spacing issues in markdown 
+        lines = [Block._remove_extra_spacing(line.rstrip()) for line in markdown.strip().splitlines()]
+        
+        processed_lines = []
+        in_code_block = False
+        spacing_offset = 0
+        
+        for line in lines:
+            in_code_block_delimiter_line = '```' in line
+            if in_code_block_delimiter_line:
+                in_code_block = not in_code_block
+                spacing_offset = line.find('`')
+                
+            if in_code_block or in_code_block_delimiter_line :
+                processed_lines.append(line[spacing_offset:])
+                
+            else:
+                processed_lines.append(line.strip())
+                 
+        processed_lines = processed_lines[:-1] if processed_lines[-1].strip() == "" else processed_lines
+        
+        
+        return "\n".join(processed_lines).split("\n\n")
+     
 
     @staticmethod
     def markdown_to_html_node(markdown: str) -> ParentNode:
@@ -95,8 +120,8 @@ class Block:
                 children = Block._text_to_HTMLNode_list(text)
                 html_node = ParentNode(heading_type, children)
             case 'code':
-                text = Block._strip_sequence(text, r"```\s*|\s*```")
-                children = [LeafNode('code', text)]
+                text = Block._strip_sequence(text, r"```")
+                children = [LeafNode('code', text.rstrip())]
                 html_node = ParentNode('pre', children)
             case 'quote':
                 text = text.strip()

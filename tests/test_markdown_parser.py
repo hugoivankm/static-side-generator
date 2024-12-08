@@ -190,7 +190,7 @@ class TestMarkdownParser(unittest.TestCase):
         markdown = """
         # This is an h1 heading       
 
-        ** Some bold text** :D
+        ** Some bold text** :X
 
         > A nice quote
 
