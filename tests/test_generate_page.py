@@ -2,16 +2,17 @@ import unittest
 import sys
 
 import os
+
 # Add the `src` directory to the sys.path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
+)
 
 from page_generator import generate_page
 
 
 class TestPageGenerator(unittest.TestCase):
-    
     def test_generate_page(self):
-        
         def clean_up():
             pattern = "index.html"
             directory = "./tests/testing-data/"
@@ -19,23 +20,22 @@ class TestPageGenerator(unittest.TestCase):
                 if filename.startswith(pattern):
                     file_path = os.path.join(directory, filename)
                     if os.path.isfile(file_path):
-                        os.remove(file_path)           
+                        os.remove(file_path)
+
         clean_up()
-        
-        
+
         def get_filename():
             pattern = "index.html"
             directory = "./tests/testing-data/"
             for filename in os.listdir(directory):
                 if filename.startswith(pattern):
-                    return filename        
+                    return filename
             return None
-        
-        
-        def normlize_html(html):
-            return ' '.join(html.split())
 
-        expected = '''
+        def normlize_html(html):
+            return " ".join(html.split())
+
+        expected = """
         <!DOCTYPE html>
         <html>
 
@@ -53,24 +53,25 @@ class TestPageGenerator(unittest.TestCase):
         </body>
 
         </html>
-        '''
-        
+        """
 
-        generate_page("./tests/testing-data/test_markdown.md", "./template.html", "./tests/testing-data/")
+        generate_page(
+            "./tests/testing-data/test_markdown.md",
+            "./template.html",
+            "./tests/testing-data/",
+        )
         actual = ""
-        
+
         file_name = get_filename()
         if file_name is None:
             self.fail("No content files have have been generated")
-            
+
         file_path = os.path.join("./tests/testing-data", file_name)
-            
+
         with open(file_path) as content_file:
             actual = content_file.read()
-        
+
         normlized_actual = normlize_html(actual)
         normlized_expected = normlize_html(expected)
-        
-        
+
         self.assertEqual(normlized_actual, normlized_expected)
-    

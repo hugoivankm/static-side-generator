@@ -4,12 +4,15 @@ import re
 
 class MarkdownParser:
     @staticmethod
-    def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType):
+    def split_nodes_delimiter(
+        old_nodes: list[TextNode], delimiter: str, text_type: TextType
+    ):
         new_node = []
         for node in old_nodes:
             if node.text_type == TextType.TEXT:
                 sub_list = MarkdownParser._parse_text_to_node_list(
-                    node.text, delimiter, text_type)
+                    node.text, delimiter, text_type
+                )
                 new_node = [*new_node, *sub_list]
             else:
                 new_node.extend([node])
@@ -39,20 +42,21 @@ class MarkdownParser:
 
         representation = ""
         for text_node in list:
-            representation += (text_node.__repr__() +
-                               (", " if text_node != list[-1] else ","))
+            representation += text_node.__repr__() + (
+                ", " if text_node != list[-1] else ","
+            )
         return f"[{representation}]"
 
     @staticmethod
     def extract_markdown_images(text: str):
-        '''
+        """
         Example:
         Input:
         text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
 
         Output:
         [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
-        '''
+        """
         result = []
         matches = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
         for match in matches:
@@ -61,14 +65,14 @@ class MarkdownParser:
 
     @staticmethod
     def extract_markdown_links(text: str):
-        '''
+        """
         Example:
         Input:
         text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
 
         Output:
         [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
-        '''
+        """
         result = []
         matches = re.findall(r"\[(.*?)\]\((.*?)\)", text)
         for match in matches:
@@ -77,8 +81,8 @@ class MarkdownParser:
 
     @staticmethod
     def split_nodes_link(old_nodes: list[TextNode]):
-        '''
-        Input: 
+        """
+        Input:
         node = TextNode(
             "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
             TextType.TEXT,
@@ -95,7 +99,7 @@ class MarkdownParser:
                 "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
             ),
         ]
-        '''
+        """
 
         new_nodes = []
         for old_node in old_nodes:
@@ -122,21 +126,19 @@ class MarkdownParser:
 
                 if previous_non_link:
                     new_nodes.append(TextNode(sections[0], original_text_type))
-                new_nodes.append(
-                    TextNode(link_text, TextType.LINK, f"{link_url}"))
+                new_nodes.append(TextNode(link_text, TextType.LINK, f"{link_url}"))
 
                 if rest_of_text and (link is last_link):
-                    new_nodes.append(
-                        TextNode(rest_of_text, original_text_type))
+                    new_nodes.append(TextNode(rest_of_text, original_text_type))
 
                 text = rest_of_text
         return new_nodes
 
     @staticmethod
     def split_nodes_image(old_nodes: list[TextNode]):
-        '''
+        """
         Example:
-        Input: 
+        Input:
         node = TextNode(
             "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
             TextType.TEXT,
@@ -155,15 +157,14 @@ class MarkdownParser:
                 "obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
             ),
         ]
-        '''
+        """
 
         new_nodes = []
         for old_node in old_nodes:
             original_text = text = old_node.text
             original_text_type = old_node.text_type
 
-            images = MarkdownParser.extract_markdown_images(
-                original_text)
+            images = MarkdownParser.extract_markdown_images(original_text)
 
             if (original_text_type is not TextType.TEXT) or not images:
                 new_nodes.append(old_node)
@@ -183,12 +184,10 @@ class MarkdownParser:
 
                 if previous_non_image:
                     new_nodes.append(TextNode(sections[0], original_text_type))
-                new_nodes.append(
-                    TextNode(image_alt, TextType.IMAGE, f"{image_url}"))
+                new_nodes.append(TextNode(image_alt, TextType.IMAGE, f"{image_url}"))
 
                 if rest_of_text and (image is last_image):
-                    new_nodes.append(
-                        TextNode(rest_of_text, original_text_type))
+                    new_nodes.append(TextNode(rest_of_text, original_text_type))
 
                 text = rest_of_text
 
@@ -200,18 +199,20 @@ class MarkdownParser:
             raise ValueError("A text string must be provided")
         inital_text_node = TextNode(text, TextType.TEXT)
         previous_bold = MarkdownParser.split_nodes_delimiter(
-            [inital_text_node], "**", TextType.BOLD)
+            [inital_text_node], "**", TextType.BOLD
+        )
         previous_code = MarkdownParser.split_nodes_delimiter(
-            previous_bold, "`", TextType.CODE)
+            previous_bold, "`", TextType.CODE
+        )
         previous_italic = MarkdownParser.split_nodes_delimiter(
-            previous_code, "*", TextType.ITALIC)
-        previous_images = MarkdownParser.split_nodes_image(
-            previous_italic)
+            previous_code, "*", TextType.ITALIC
+        )
+        previous_images = MarkdownParser.split_nodes_image(previous_italic)
         return MarkdownParser.split_nodes_link(previous_images)
-    
+
     @staticmethod
     def extract_title(markdown: str) -> str:
-        """ Method to extract h1 header from markdown
+        """Method to extract h1 header from markdown
 
         Args:
             markdown (str): A string that contains valid markdown with an h1 header
@@ -219,18 +220,17 @@ class MarkdownParser:
         Returns:
             str: Content of the first header found in the document
         """
-        from block import Block, BlockType          
-        blocks =  Block.markdown_to_blocks(markdown)
+        from block import Block, BlockType
+
+        blocks = Block.markdown_to_blocks(markdown)
         for block in blocks:
             block_type = Block.block_to_block_type(block)
             if block_type is BlockType.HEADING.value and MarkdownParser._is_h1(block):
                 return block.split(" ", maxsplit=1)[1]
         raise ValueError("markdown does not contain a corresponding h1 heading")
-    
-    
+
     @staticmethod
-    def _is_h1(header_text: str ) -> bool:
+    def _is_h1(header_text: str) -> bool:
         header_text = header_text.strip()
         h1_regex = r"^#\s+\w+"
         return bool(re.search(h1_regex, header_text))
-        

@@ -23,7 +23,7 @@ class Block:
 
     Attributes:
         content - Markdown content for the block
-        block_type - The type of content this block node contains, 
+        block_type - The type of content this block node contains,
         which is a member of the Block enum.
     """
 
@@ -38,17 +38,16 @@ class Block:
         return f'Block("{self.content}", "{self.block_type}")'
 
     def __eq__(self, other):
-        return self.content == other.content and \
-               self.block_type == other.block_type
+        return self.content == other.content and self.block_type == other.block_type
 
     @staticmethod
     def block_to_block_type(markdown_block: str):
         block_re_dict = {
-            BlockType.HEADING: (r"^#{1,6} (.+)", 'single'),
-            BlockType.CODE: (r"```(?:[^```]+|`(?!``)|``(?!`))*```", 'single'),
-            BlockType.QUOTE: (r"^>(.*?)", 'single'),
-            BlockType.UNORDERED_LIST: (r"^(\*|-) (.*)$", 'multi'),
-            BlockType.ORDEREDLIST: (r"^\d+.\s(.+)$", 'multi'),
+            BlockType.HEADING: (r"^#{1,6} (.+)", "single"),
+            BlockType.CODE: (r"```(?:[^```]+|`(?!``)|``(?!`))*```", "single"),
+            BlockType.QUOTE: (r"^>(.*?)", "single"),
+            BlockType.UNORDERED_LIST: (r"^(\*|-) (.*)$", "multi"),
+            BlockType.ORDEREDLIST: (r"^\d+.\s(.+)$", "multi"),
         }
 
         # pattern is a BlockType
@@ -62,83 +61,89 @@ class Block:
 
     @staticmethod
     def _matches_pattern(pattern, markdown, multiline):
-        if multiline == 'multi':
+        if multiline == "multi":
             return bool(re.match(pattern, markdown, re.MULTILINE))
         else:
             return bool(re.match(pattern, markdown))
 
     @staticmethod
     def _remove_extra_spacing(text: str) -> str:
-        pattern = re.compile(r'\n\s+ | \s+\n')
-        return re.sub(pattern, '\n', text)
+        pattern = re.compile(r"\n\s+ | \s+\n")
+        return re.sub(pattern, "\n", text)
 
     @staticmethod
     def markdown_to_blocks(markdown: str) -> list[str]:
-        # Fix additional spacing issues in markdown 
-        lines = [Block._remove_extra_spacing(line.rstrip()) for line in markdown.strip().splitlines()]
-        
+        # Fix additional spacing issues in markdown
+        lines = [
+            Block._remove_extra_spacing(line.rstrip())
+            for line in markdown.strip().splitlines()
+        ]
+
         processed_lines = []
         in_code_block = False
         spacing_offset = 0
-        
+
         for line in lines:
-            in_code_block_delimiter_line = '```' in line
+            in_code_block_delimiter_line = "```" in line
             if in_code_block_delimiter_line:
                 in_code_block = not in_code_block
-                spacing_offset = line.find('`')
-                
+                spacing_offset = line.find("`")
+
             if in_code_block or in_code_block_delimiter_line:
                 processed_lines.append(line[spacing_offset:])
-                
+
             else:
                 processed_lines.append(line.strip())
-                 
-        processed_lines = processed_lines[:-1] if processed_lines[-1].strip() == "" else processed_lines
+
+        processed_lines = (
+            processed_lines[:-1]
+            if processed_lines[-1].strip() == ""
+            else processed_lines
+        )
         return "\n".join(processed_lines).split("\n\n")
-    
-    
+
     @staticmethod
     def markdown_to_html_node(markdown: str) -> ParentNode:
         block_strings = Block.markdown_to_blocks(markdown)
         children = []
         for block_string in block_strings:
             html_node = Block.text_to_child(block_string)
-            children.append(html_node)   
-        return ParentNode('div', children)
-    
+            children.append(html_node)
+        return ParentNode("div", children)
+
     @staticmethod
     def text_to_child(text: str) -> HTMLNode:
-        '''
-        Takes the text of a markdown block and retuns the respective HTMLNode 
-        '''
+        """
+        Takes the text of a markdown block and retuns the respective HTMLNode
+        """
         block_type = Block.block_to_block_type(text)
         html_node: HTMLNode = None
         match block_type:
-            case 'heading':
+            case "heading":
                 heading_type = Block._parse_heading_type_from_text(text)
-                text = Block._strip_sequence(text, r'#{1,6} ')
+                text = Block._strip_sequence(text, r"#{1,6} ")
                 children = Block._text_to_HTMLNode_list(text)
                 html_node = ParentNode(heading_type, children)
-            case 'code':
+            case "code":
                 text = Block._strip_sequence(text, r"```")
-                children = [LeafNode('code', text.rstrip())]
-                html_node = ParentNode('pre', children)
-            case 'quote':
+                children = [LeafNode("code", text.rstrip())]
+                html_node = ParentNode("pre", children)
+            case "quote":
                 text = text.strip()
-                text = Block._strip_sequence(text, r'> ')
+                text = Block._strip_sequence(text, r"> ")
                 children = Block._text_to_HTMLNode_list(text)
                 html_node = ParentNode("blockquote", children)
-            case 'unordered list':
+            case "unordered list":
                 text = Block._strip_sequence(text, r"\* ")
                 children = Block._parse_list_items(text)
-                html_node = ParentNode('ul', children)
-            case 'ordered list':
+                html_node = ParentNode("ul", children)
+            case "ordered list":
                 text = Block._strip_sequence(text, r"\d+\.\s+")
                 children = Block._parse_list_items(text)
-                html_node = ParentNode('ol', children)
-            case 'paragraph':
+                html_node = ParentNode("ol", children)
+            case "paragraph":
                 children = Block._text_to_HTMLNode_list(text)
-                html_node = ParentNode('p', children)
+                html_node = ParentNode("p", children)
             case _:
                 raise ValueError("Block is not supported")
         return html_node
@@ -147,7 +152,8 @@ class Block:
     def _text_to_HTMLNode_list(text) -> list[HTMLNode]:
         text_nodes = MarkdownParser.text_to_text_nodes(text)
         mapped_html_nodes = map(
-            lambda node: TextNode.text_node_to_html_node(node), text_nodes)
+            lambda node: TextNode.text_node_to_html_node(node), text_nodes
+        )
         return list(mapped_html_nodes)
 
     @staticmethod
@@ -165,8 +171,9 @@ class Block:
         li_list = []
         list_items: list[str] = items.split("\n")
         for item in list_items:
-            li_list.append(ParentNode(
-                'li', children=Block._text_to_HTMLNode_list(item)))
+            li_list.append(
+                ParentNode("li", children=Block._text_to_HTMLNode_list(item))
+            )
         return li_list
 
     @staticmethod

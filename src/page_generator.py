@@ -12,10 +12,12 @@ class PathNotFoundError(Exception):
             self.path}' does not exist or additional permissions need to be granted for access"
         super().__init__(self.message)
 
+
 class UnableToGeneratePage(Exception):
     def __init__(self, message) -> None:
         self.message = message
         super().__init__(self.message)
+
 
 def _replace_pattern(text: str, target: str) -> Callable[[str, str], str]:
     import re
@@ -23,6 +25,7 @@ def _replace_pattern(text: str, target: str) -> Callable[[str, str], str]:
     def replacer(text: str, replacement: str):
         pattern = r"\{\{\s*" + f"{target}" + r"\s*\}\}"
         return re.sub(pattern, replacement, text)
+
     return replacer
 
 
@@ -31,9 +34,11 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
         if not os.path.exists(path_arg):
             raise PathNotFoundError(path_arg)
 
-    print(f"Generating page from {from_path} to {
-          dest_path} using {template_path}")
-    
+    print(
+        f"Generating page from {from_path} to {
+          dest_path} using {template_path}"
+    )
+
     markdown: str = ""
     with open(from_path) as markdown_file:
         markdown = markdown_file.read()
@@ -56,35 +61,39 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
 
     if not os.path.isdir(dest_path):
         raise ValueError("Destination Path must be a valid directory")
-    
+
     dest_file = os.path.join(dest_path, "index.html")
-    with open(dest_file, 'w') as dest:
+    with open(dest_file, "w") as dest:
         dest.write(template)
 
 
-def remove_segment_from_path(path: PosixPath, segment_to_remove: str = "content") -> PosixPath:
+def remove_segment_from_path(
+    path: PosixPath, segment_to_remove: str = "content"
+) -> PosixPath:
     path_parts: tuple = path.parts
     segment_parts: tuple = PosixPath(segment_to_remove).parts
 
     # Check if the path starts with the segment to remove
-    if path_parts[:len(segment_to_remove.split('/'))] == segment_parts:
-    # Join the parts after the segment to remove
-        new_path = Path(*path_parts[len(segment_parts):]) 
+    if path_parts[: len(segment_to_remove.split("/"))] == segment_parts:
+        # Join the parts after the segment to remove
+        new_path = Path(*path_parts[len(segment_parts) :])
         return new_path
-    else: 
-        # Return the original path if it does not start with the segment to remove 
+    else:
+        # Return the original path if it does not start with the segment to remove
         return path
 
-def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str) -> None:
+
+def generate_pages_recursive(
+    dir_path_content: str, template_path: str, dest_dir_path: str
+) -> None:
     try:
-        for p in Path(dir_path_content).rglob('*'):
+        for p in Path(dir_path_content).rglob("*"):
             if os.path.isfile(p):
                 simplified_path: PosixPath = remove_segment_from_path(p)
                 new_dest_dir_path = os.path.join(dest_dir_path, simplified_path.parent)
                 if not os.path.exists(new_dest_dir_path):
                     os.makedirs(new_dest_dir_path)
-                generate_page(p, template_path, new_dest_dir_path )     
+                generate_page(p, template_path, new_dest_dir_path)
     except FileNotFoundError as e:
-         print(f"FileNotFoundError: {e}")
-         raise UnableToGeneratePage("Unable to generate page")
-         
+        print(f"FileNotFoundError: {e}")
+        raise UnableToGeneratePage("Unable to generate page")
