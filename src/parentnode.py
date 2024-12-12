@@ -1,5 +1,5 @@
 from htmlnode import HTMLNode
-from leafnode import LeafNode
+
 
 class ParentNode(HTMLNode):
     """
@@ -16,12 +16,10 @@ class ParentNode(HTMLNode):
         if not children:
             raise ValueError("All parent nodes must have children")
         super().__init__(tag, None, children, props)
-    
-        
+                
     def __repr__(self):
         return f'ParentNode(tag="{self.tag}", children="{self.children}", props="{self.props}")'
-    
-            
+             
     def to_html(self):        
         innerHTML = ""
         for child in self.children:

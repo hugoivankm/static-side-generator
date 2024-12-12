@@ -32,6 +32,3 @@ def copy_directory_from_src_to_dest(src, dst):
     except OSError as e:
         print(e)
         raise OSError(e)
-
-if __name__ == "__main__":
-    main()

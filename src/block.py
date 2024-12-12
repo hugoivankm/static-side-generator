@@ -1,6 +1,6 @@
 from enum import Enum
 from htmlnode import HTMLNode
-from parentnode import ParentNode, HTMLNode
+from parentnode import ParentNode
 from textnode import TextNode
 from leafnode import LeafNode
 from markdown_parser import MarkdownParser
@@ -23,7 +23,8 @@ class Block:
 
     Attributes:
         content - Markdown content for the block
-        block_type - The type of content this block node contains, which is a member of the Block enum.
+        block_type - The type of content this block node contains, 
+        which is a member of the Block enum.
     """
 
     def __init__(self, content: str, block_type: BlockType) -> None:
@@ -37,7 +38,8 @@ class Block:
         return f'Block("{self.content}", "{self.block_type}")'
 
     def __eq__(self, other):
-        return self.content == other.content and self.block_type == other.block_type
+        return self.content == other.content and \
+               self.block_type == other.block_type
 
     @staticmethod
     def block_to_block_type(markdown_block: str):
@@ -85,18 +87,16 @@ class Block:
                 in_code_block = not in_code_block
                 spacing_offset = line.find('`')
                 
-            if in_code_block or in_code_block_delimiter_line :
+            if in_code_block or in_code_block_delimiter_line:
                 processed_lines.append(line[spacing_offset:])
                 
             else:
                 processed_lines.append(line.strip())
                  
         processed_lines = processed_lines[:-1] if processed_lines[-1].strip() == "" else processed_lines
-        
-        
         return "\n".join(processed_lines).split("\n\n")
-     
-
+    
+    
     @staticmethod
     def markdown_to_html_node(markdown: str) -> ParentNode:
         block_strings = Block.markdown_to_blocks(markdown)

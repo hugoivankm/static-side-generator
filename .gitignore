@@ -1,5 +1,6 @@
 __pycache__/
 sample.*
-.vscode
+.vscode/
 public/
 content_
+venv/
